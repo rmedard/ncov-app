@@ -16,22 +16,21 @@ class Dashboard extends StatefulWidget {
 
 class _DashboardState extends State<Dashboard> {
   EndpointsData _endpointsData;
+  DataRepository _dataRepository;
 
   @override
   void initState() {
     super.initState();
-    final dataRepository = Provider.of<DataRepository>(context, listen: false);
-    _endpointsData = dataRepository.getAllEndpointsCachedDate(); // Get cached data first, for fast load.
+    _dataRepository = Provider.of<DataRepository>(context, listen: false);
+    _endpointsData = _dataRepository.getAllEndpointsCachedDate(); // Get cached data first, for fast load.
     _updateData(); // Then call API to refresh data and cache
   }
 
   Future<void> _updateData() async {
     try {
-      final dataRepository =
-          Provider.of<DataRepository>(context, listen: false);
-      final endpointsData = await dataRepository.getAllEndpointsData();
+      final endpointsData = await _dataRepository.getAllEndpointsData();
       setState(() => _endpointsData = endpointsData);
-    } on SocketException catch (e) {
+    } on SocketException catch (_) {
       showAlertDialog(
           context: context,
           title: 'Connection Error',
